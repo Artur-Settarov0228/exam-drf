@@ -10,7 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializers import UserRegisterSerializer, MeSerializer, UserDeteilSerializer, UserListSerializer, UserUpdateSerializer, UserSerializer
 from .models import CustomUser, ProfilePatient
-from .permissions import IsAdmin, IsDoctor, IsPatient
+from .permissions import IsAdmin,  IsPatient
 
 
 class RegisterView(APIView):
@@ -90,7 +90,7 @@ class MeView(APIView):
     
 
 class ProfilePatentView(APIView):
-    permission_classes = [IsAuthenticated, IsDoctor]
+    permission_classes = [IsAuthenticated, IsPatient]
     def get(self, request, user_id):
         profile = get_object_or_404(ProfilePatient, user_id = user_id)
         serializer = UserSerializer(profile)
