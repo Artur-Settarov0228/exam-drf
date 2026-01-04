@@ -31,7 +31,7 @@ class CustomUser(AbstractUser):
         return self.role == self.Role.PATIENT
 
 
-class PatientProfile(models.Model):
+class ProfilePatient(models.Model):
 
     class Gender(models.TextChoices):
         MALE = 'male', 'Male'
@@ -52,4 +52,4 @@ class PatientProfile(models.Model):
     )
 
     def __str__(self):
-        return f"{self.user.username} (Patient)"
+        return f"Patient {self.user.username}"
