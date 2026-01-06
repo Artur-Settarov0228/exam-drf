@@ -15,3 +15,16 @@ class AppointmentSerializer(serializers.ModelSerializer):
                 "Bunday time slot mavjud emas"
             )
         return value
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appointment
+        fields = "__all__"
+
+
+class AppointmentStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appointment
+        fields = ("status",)
+
+
