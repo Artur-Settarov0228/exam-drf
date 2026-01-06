@@ -9,15 +9,15 @@ from rest_framework import status
 from .models import ProfileDoctor
 from .serializers import  DoctorListDetailSeralizer, DoctorUpdateSerializer
 
-from apps.users.permissions import IsDoctor, IsOwner
+from apps.users.permissions import IsDoctor, IsOwner, IsAdmin
 
 
 
 class DoctorListView(APIView):
-    permission_classes = [IsAuthenticated, IsDoctor]
+    permission_classes = [IsAuthenticated, IsOwner]
 
     def get(self, request: Request) -> Response:
-        doctors = sers = ProfileDoctor.objects.filter(role=ProfileDoctor.Role.DOCTOR)
+        doctors = ProfileDoctor.objects.all()
         serializer = DoctorListDetailSeralizer(doctors, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -25,10 +25,10 @@ class DoctorListView(APIView):
 
 
 class DoctorDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated,IsOwner ]
 
     def get(self, request: Request, doctor_id: int):
-        doctor = get_object_or_404(ProfileDoctor, doctor_id=doctor_id)
+        doctor = get_object_or_404(ProfileDoctor, id=doctor_id)
         serializer = DoctorListDetailSeralizer(doctor)
 
         return Response(serializer.data, status = status.HTTP_200_OK)

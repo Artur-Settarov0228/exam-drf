@@ -8,9 +8,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .serializers import UserRegisterSerializer, MeSerializer, UserDeteilSerializer, UserListSerializer, UserUpdateSerializer, UserSerializer
+from .serializers import UserRegisterSerializer, MeSerializer, UserDeteilSerializer, UserListSerializer, ProfilePatientSerializer,UserUpdateSerializer, UserSerializer
 from .models import CustomUser, ProfilePatient
-from .permissions import IsAdmin,  IsPatient
+from .permissions import IsAdmin,  IsPatient, IsOwner
 
 
 class RegisterView(APIView):
@@ -89,16 +89,45 @@ class MeView(APIView):
         return Response(serializer.data)
     
 
-class ProfilePatentView(APIView):
+class ProfilePatientView(APIView):
     permission_classes = [IsAuthenticated, IsPatient]
-    def get(self, request, user_id):
-        profile = get_object_or_404(ProfilePatient, user_id = user_id)
-        serializer = UserSerializer(profile)
-        return Response(serializer.data)
-    
-    def patch(self, request, user_id):
-        profile = get_object_or_404(ProfilePatient, user_id = user_id)
-        serializer = UserUpdateSerializer(profile, data = request.data , partail = True)
+
+    def get(self, request):
+        try:
+            profile = request.user.patient_profile
+        except ProfilePatient.DoesNotExist:
+            return Response(
+                {"detail": "Patient profile hali yaratilmagan"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = ProfilePatientSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        profile = get_object_or_404(ProfilePatient, user=request.user)
+
+        serializer = ProfilePatientSerializer(
+            profile,
+            data=request.data,
+            partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProfilePatientView(APIView):
+    def get(self, request):
+        profile = ProfilePatient.objects.get(user=request.user)
+        serializer = ProfilePatientSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def patch(self, request):
+        user = request.user
+        serializer = ProfilePatientSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

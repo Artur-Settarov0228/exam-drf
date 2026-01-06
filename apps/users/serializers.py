@@ -113,3 +113,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             "role",
             "is_active"
         )
+class ProfilePatientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfilePatient
+        fields = (
+            "phone",
+            "date_of_birth",
+            "gender",
+        )
