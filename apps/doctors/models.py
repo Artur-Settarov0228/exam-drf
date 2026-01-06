@@ -23,3 +23,11 @@ class ProfileDoctor(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.specialization}"
+    
+
+class TimeSlotDoctor(models.Model):
+    doctor = models.ForeignKey(ProfileDoctor, on_delete=models.CASCADE, related_name="doctor_profile")
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    is_aviable = models.BooleanField()

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ProfileDoctor
+from .models import ProfileDoctor, TimeSlotDoctor
 from apps.users.models import CustomUser
 
 
@@ -35,3 +35,14 @@ class DoctorUpdateSerializer(serializers.ModelSerializer):
             "experience_years",
             "gender",
         )
+
+class TimeSlotDoctorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TimeSlotDoctor
+        fields = '__all__'
+
+    def validate(self, attrs):
+        if attrs['start_time'] >= attrs['end_time']:
+            raise serializers.ValidationError("Start time must be before end time.")
+        return attrs
+    
